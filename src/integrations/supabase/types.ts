@@ -250,6 +250,7 @@ export type Database = {
           id: string
           is_active: boolean
           name: string
+          parent_lego_id: string | null
         }
         Insert: {
           category?: string | null
@@ -260,6 +261,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name: string
+          parent_lego_id?: string | null
         }
         Update: {
           category?: string | null
@@ -270,8 +272,17 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          parent_lego_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "lego_catalogue_parent_lego_id_fkey"
+            columns: ["parent_lego_id"]
+            isOneToOne: false
+            referencedRelation: "lego_catalogue"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       monday_items: {
         Row: {
@@ -528,6 +539,130 @@ export type Database = {
           },
         ]
       }
+      recurring_allocations: {
+        Row: {
+          allocated_hours: number
+          assigned_by: string | null
+          cadence_days: number
+          cancel_reason: string | null
+          cancelled_at: string | null
+          client_id: string
+          created_at: string
+          employee_id: string
+          end_date: string | null
+          id: string
+          lego_id: string | null
+          notes: string | null
+          parent_recurring_id: string | null
+          project_id: string | null
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          allocated_hours: number
+          assigned_by?: string | null
+          cadence_days?: number
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          client_id: string
+          created_at?: string
+          employee_id: string
+          end_date?: string | null
+          id?: string
+          lego_id?: string | null
+          notes?: string | null
+          parent_recurring_id?: string | null
+          project_id?: string | null
+          start_date: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          allocated_hours?: number
+          assigned_by?: string | null
+          cadence_days?: number
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          client_id?: string
+          created_at?: string
+          employee_id?: string
+          end_date?: string | null
+          id?: string
+          lego_id?: string | null
+          notes?: string | null
+          parent_recurring_id?: string | null
+          project_id?: string | null
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_allocations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_allocations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_profitability"
+            referencedColumns: ["client_id"]
+          },
+          {
+            foreignKeyName: "recurring_allocations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_effective_rate"
+            referencedColumns: ["client_id"]
+          },
+          {
+            foreignKeyName: "recurring_allocations_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_allocations_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "v_employee_utilisation"
+            referencedColumns: ["employee_id"]
+          },
+          {
+            foreignKeyName: "recurring_allocations_lego_id_fkey"
+            columns: ["lego_id"]
+            isOneToOne: false
+            referencedRelation: "lego_catalogue"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_allocations_parent_recurring_id_fkey"
+            columns: ["parent_recurring_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_allocations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_allocations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_allocations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_project_burn"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       scope_amendments: {
         Row: {
           amendment_date: string
@@ -616,6 +751,7 @@ export type Database = {
           monday_item_id: string | null
           notes: string | null
           project_id: string | null
+          recurring_allocation_id: string | null
           reviewed_at: string | null
           variance_hours: number | null
           variance_note: string | null
@@ -633,6 +769,7 @@ export type Database = {
           monday_item_id?: string | null
           notes?: string | null
           project_id?: string | null
+          recurring_allocation_id?: string | null
           reviewed_at?: string | null
           variance_hours?: number | null
           variance_note?: string | null
@@ -650,6 +787,7 @@ export type Database = {
           monday_item_id?: string | null
           notes?: string | null
           project_id?: string | null
+          recurring_allocation_id?: string | null
           reviewed_at?: string | null
           variance_hours?: number | null
           variance_note?: string | null
@@ -704,6 +842,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_project_burn"
             referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "weekly_allocations_recurring_allocation_id_fkey"
+            columns: ["recurring_allocation_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_allocations"
+            referencedColumns: ["id"]
           },
         ]
       }
