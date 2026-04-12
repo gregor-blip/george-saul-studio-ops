@@ -90,7 +90,18 @@ export function AskClaudeModal() {
         });
 
         if (!response.ok || !response.body) {
-          setAnswer("Sorry, something went wrong. Please try again.");
+          let errorMsg = "Sorry, something went wrong. Please try again.";
+          try {
+            const errJson = await response.json() as { error?: string };
+            if (response.status === 502 || response.status === 429) {
+              errorMsg = "Claude is currently rate-limited. Please wait a moment and try again.";
+            } else if (errJson.error) {
+              errorMsg = errJson.error;
+            }
+          } catch {
+            // use default message
+          }
+          setAnswer(errorMsg);
           setIsLoading(false);
           setStreamDone(true);
           return;
