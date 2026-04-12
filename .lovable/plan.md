@@ -1,56 +1,22 @@
 
 
-## George & Saul Studio Operations Dashboard — Application Shell
+## Ask Claude Spotlight — Updated Implementation Plan
 
-### Overview
-Building the complete application shell for an internal dark-mode dashboard for a New York design studio. This includes authentication, sidebar navigation, and empty page stubs for 8 routes. No data or charts — shell only.
+### Dependency Check Result
+- **framer-motion**: not installed — needs to be added
+- **react-markdown**: not installed — needs to be added
 
-### 1. Install Dependencies & Configure Fonts
-- Install `geist` npm package
-- Configure `fontFamily.sans` (Geist Sans) and `fontFamily.mono` (Geist Mono) in `tailwind.config.ts`
-- Import Geist font CSS in `main.tsx`
+### Plan (unchanged from prior approval, with confirmed installs)
 
-### 2. Update Design System for Dark-Only Theme
-- Replace `index.css` CSS variables with dark palette (#0A0A0A background, #141414 cards, white/8% borders)
-- Force dark mode globally — no toggle
+1. **Install dependencies**: `framer-motion` and `react-markdown`
 
-### 3. Login Page (`/login`)
-- Centered card on #0A0A0A background with "G&S" wordmark + "Studio Operations" subtitle
-- Email + password inputs (dark-styled shadcn Input)
-- Blue "Sign in" button (#0070F3)
-- Error state in red-400
-- Wired to Supabase Auth (email/password), redirects to `/dashboard` on success
+2. **Create `src/components/ask-claude/AskClaudeBar.tsx`** — persistent prompt bar at top of content area with Sparkles icon, placeholder text, Cmd+K badge
 
-### 4. Auth Context & Route Guard
-- Auth provider using Supabase `onAuthStateChange` + `getSession`
-- Protected route wrapper redirecting unauthenticated users to `/login`
-- `/` redirects to `/dashboard` or `/login` based on session
+3. **Create `src/components/ask-claude/AskClaudeModal.tsx`** — full-screen overlay with three states (input, loading, answer), SSE streaming from `ask-claude` Edge Function, suggestion chips, conversation history (max 3 exchanges, component state only)
 
-### 5. Sidebar Layout
-- 240px fixed sidebar with:
-  - "G&S" wordmark at top
-  - Nav sections: main routes, "DATA" label group, "COMPARE" label group
-  - Lucide icons for each nav item
-  - Active state with blue accent bar + white text
-  - User email + sign out pinned at bottom
-- Main content area: `bg-[#0A0A0A] flex-1 overflow-y-auto px-8 py-8`
+4. **Create `src/components/ask-claude/AskClaudeProvider.tsx`** — context provider managing modal open/close state + global Cmd+K / Ctrl+K keyboard shortcut
 
-### 6. Page Stubs (8 pages)
-Each page shows title, subtitle, and one dashed placeholder card:
-- `/dashboard` — Studio Overview
-- `/clients` — Clients
-- `/team` — Team
-- `/projects` — Projects
-- `/pipeline` — Pipeline
-- `/data` — Data Management
-- `/settings/legos` — Lego Catalogue
-- `/benchmarks` — Benchmarks
+5. **Modify `src/components/DashboardLayout.tsx`** — wrap content with `AskClaudeProvider`, render `AskClaudeBar` as first child in `<main>` before `<Outlet />`
 
-### 7. GitHub Repository
-- Create `george-saul-dashboard` private repository and connect
-
-### Guardrails
-- No database modifications — query only
-- No top nav, charts, data, dark/light toggle, notifications, search, or breadcrumbs
-- TypeScript strict, no `any` types
+No other files modified. No database, sidebar, page, or routing changes.
 
