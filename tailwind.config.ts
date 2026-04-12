@@ -17,6 +17,9 @@ export default {
         "2xl": "1400px",
       },
     },
+    fontFamily: {
+        sans: ['"Inter Variable"', "Inter", "system-ui", "sans-serif"],
+      },
     extend: {
       fontFamily: {
         sans: ["Geist Sans", "ui-sans-serif", "system-ui", "sans-serif"],
