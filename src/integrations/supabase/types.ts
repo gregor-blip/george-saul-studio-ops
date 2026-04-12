@@ -50,6 +50,80 @@ export type Database = {
         }
         Relationships: []
       }
+      client_intelligence: {
+        Row: {
+          added_by: string
+          category: string
+          client_id: string
+          created_at: string
+          event_date: string | null
+          id: string
+          importance: string
+          insight: string
+          is_current: boolean
+          source: string
+          superseded_by: string | null
+          tags: string[] | null
+        }
+        Insert: {
+          added_by: string
+          category: string
+          client_id: string
+          created_at?: string
+          event_date?: string | null
+          id?: string
+          importance?: string
+          insight: string
+          is_current?: boolean
+          source?: string
+          superseded_by?: string | null
+          tags?: string[] | null
+        }
+        Update: {
+          added_by?: string
+          category?: string
+          client_id?: string
+          created_at?: string
+          event_date?: string | null
+          id?: string
+          importance?: string
+          insight?: string
+          is_current?: boolean
+          source?: string
+          superseded_by?: string | null
+          tags?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_intelligence_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_intelligence_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_profitability"
+            referencedColumns: ["client_id"]
+          },
+          {
+            foreignKeyName: "client_intelligence_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_effective_rate"
+            referencedColumns: ["client_id"]
+          },
+          {
+            foreignKeyName: "client_intelligence_superseded_by_fkey"
+            columns: ["superseded_by"]
+            isOneToOne: false
+            referencedRelation: "client_intelligence"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_mapping: {
         Row: {
           client_id: string
@@ -99,6 +173,7 @@ export type Database = {
           created_at: string
           id: string
           is_internal: boolean
+          is_passthrough: boolean
           name: string
           notes: string | null
           start_date: string | null
@@ -109,6 +184,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_internal?: boolean
+          is_passthrough?: boolean
           name: string
           notes?: string | null
           start_date?: string | null
@@ -119,6 +195,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_internal?: boolean
+          is_passthrough?: boolean
           name?: string
           notes?: string | null
           start_date?: string | null
@@ -162,18 +239,119 @@ export type Database = {
           },
         ]
       }
+      employee_skills: {
+        Row: {
+          added_by: string
+          category: string
+          client_id: string | null
+          confidence: string
+          created_at: string
+          employee_id: string
+          id: string
+          insight: string
+          is_current: boolean
+          lego_id: string | null
+          proficiency: string | null
+          source: string
+          superseded_by: string | null
+        }
+        Insert: {
+          added_by: string
+          category: string
+          client_id?: string | null
+          confidence?: string
+          created_at?: string
+          employee_id: string
+          id?: string
+          insight: string
+          is_current?: boolean
+          lego_id?: string | null
+          proficiency?: string | null
+          source?: string
+          superseded_by?: string | null
+        }
+        Update: {
+          added_by?: string
+          category?: string
+          client_id?: string | null
+          confidence?: string
+          created_at?: string
+          employee_id?: string
+          id?: string
+          insight?: string
+          is_current?: boolean
+          lego_id?: string | null
+          proficiency?: string | null
+          source?: string
+          superseded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_skills_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_skills_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_profitability"
+            referencedColumns: ["client_id"]
+          },
+          {
+            foreignKeyName: "employee_skills_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_effective_rate"
+            referencedColumns: ["client_id"]
+          },
+          {
+            foreignKeyName: "employee_skills_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_skills_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "v_employee_utilisation"
+            referencedColumns: ["employee_id"]
+          },
+          {
+            foreignKeyName: "employee_skills_lego_id_fkey"
+            columns: ["lego_id"]
+            isOneToOne: false
+            referencedRelation: "lego_catalogue"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_skills_superseded_by_fkey"
+            columns: ["superseded_by"]
+            isOneToOne: false
+            referencedRelation: "employee_skills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employees: {
         Row: {
           annual_salary: number | null
           available_hours_per_week: number
           contractor_hourly_rate: number | null
+          country: string
           created_at: string
           employment_type: string
+          holiday_days_per_year: number
           hourly_cost_rate: number | null
           id: string
           is_active: boolean
           is_partner: boolean
           name: string
+          pto_days_per_year: number
           role: string | null
           start_date: string | null
         }
@@ -181,13 +359,16 @@ export type Database = {
           annual_salary?: number | null
           available_hours_per_week?: number
           contractor_hourly_rate?: number | null
+          country?: string
           created_at?: string
           employment_type?: string
+          holiday_days_per_year?: number
           hourly_cost_rate?: number | null
           id?: string
           is_active?: boolean
           is_partner?: boolean
           name: string
+          pto_days_per_year?: number
           role?: string | null
           start_date?: string | null
         }
@@ -195,13 +376,16 @@ export type Database = {
           annual_salary?: number | null
           available_hours_per_week?: number
           contractor_hourly_rate?: number | null
+          country?: string
           created_at?: string
           employment_type?: string
+          holiday_days_per_year?: number
           hourly_cost_rate?: number | null
           id?: string
           is_active?: boolean
           is_partner?: boolean
           name?: string
+          pto_days_per_year?: number
           role?: string | null
           start_date?: string | null
         }
@@ -393,6 +577,81 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_effective_rate"
             referencedColumns: ["client_id"]
+          },
+        ]
+      }
+      project_retrospectives: {
+        Row: {
+          added_by: string
+          category: string
+          client_id: string
+          created_at: string
+          employee_ids: string[] | null
+          id: string
+          importance: string
+          insight: string
+          project_id: string | null
+          source: string
+        }
+        Insert: {
+          added_by: string
+          category: string
+          client_id: string
+          created_at?: string
+          employee_ids?: string[] | null
+          id?: string
+          importance?: string
+          insight: string
+          project_id?: string | null
+          source?: string
+        }
+        Update: {
+          added_by?: string
+          category?: string
+          client_id?: string
+          created_at?: string
+          employee_ids?: string[] | null
+          id?: string
+          importance?: string
+          insight?: string
+          project_id?: string | null
+          source?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_retrospectives_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_retrospectives_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_profitability"
+            referencedColumns: ["client_id"]
+          },
+          {
+            foreignKeyName: "project_retrospectives_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_effective_rate"
+            referencedColumns: ["client_id"]
+          },
+          {
+            foreignKeyName: "project_retrospectives_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_retrospectives_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_project_burn"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -915,6 +1174,7 @@ export type Database = {
           effective_hourly_rate: number | null
           gross_margin_pct: number | null
           is_internal: boolean | null
+          is_passthrough: boolean | null
           realisation_rate_pct: number | null
           total_allocated_cost: number | null
           total_allocated_hours: number | null
@@ -929,6 +1189,7 @@ export type Database = {
           client_id: string | null
           client_name: string | null
           effective_hourly_rate: number | null
+          is_passthrough: boolean | null
           realisation_rate_pct: number | null
           total_allocated_hours: number | null
           total_revenue: number | null
@@ -1003,13 +1264,14 @@ export type Database = {
         Row: {
           active_headcount: number | null
           active_projects: number | null
+          agency_revenue: number | null
           allocations_current_week: string | null
           avg_billable_utilisation_pct: number | null
           blended_margin_pct: number | null
           financials_last_imported: string | null
           revenue_per_employee: number | null
           total_allocated_cost: number | null
-          total_revenue: number | null
+          total_billed: number | null
         }
         Relationships: []
       }
