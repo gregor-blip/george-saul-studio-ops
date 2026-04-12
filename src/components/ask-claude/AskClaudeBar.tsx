@@ -12,7 +12,7 @@ export function AskClaudeBar() {
     >
       <Sparkles size={15} className="text-zinc-600 shrink-0" />
       <span className="text-sm italic text-zinc-600">
-        Ask anything about your studio...
+        Ask Claude anything about your team, clients...
       </span>
       <kbd className="ml-auto text-[11px] text-zinc-700 bg-white/[0.04] border border-white/[0.08] rounded-md px-1.5 py-0.5 font-mono">
         ⌘K
