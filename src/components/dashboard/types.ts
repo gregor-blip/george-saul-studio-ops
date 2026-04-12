@@ -22,7 +22,7 @@ export interface ClientProfitability {
   realisation_rate_pct: number | null;
   billing_rate: number;
   total_allocated_hours: number;
-  is_passthrough?: boolean;
+  is_passthrough: boolean;
 }
 
 export interface Receivable {
