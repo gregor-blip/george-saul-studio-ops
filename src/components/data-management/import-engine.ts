@@ -158,8 +158,8 @@ export async function runImport(
   }
 
   // Batch insert
-  const revResult = await batchInsert("qb_revenue", revenueRows);
-  const expResult = await batchInsert("qb_expenses", expenseRows);
+  const revResult = await batchInsert("qb_revenue", revenueRows as unknown as Record<string, unknown>[]);
+  const expResult = await batchInsert("qb_expenses", expenseRows as unknown as Record<string, unknown>[]);
 
   allErrors.push(...revResult.errors, ...expResult.errors);
 
