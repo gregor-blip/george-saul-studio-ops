@@ -15,6 +15,10 @@ function normalise(s: string): string {
   return s.trim().toLowerCase();
 }
 
+function sanitizeHeaders(raw: string[]): string[] {
+  return raw.map((h, i) => (h.trim() === "" ? `col_${i}` : h));
+}
+
 function autoDetectMappings(headers: string[]): ColumnMapping[] {
   const normHeaders = headers.map(normalise);
 
@@ -63,8 +67,19 @@ function parseCSVContent(text: string): { headers: string[]; rows: Record<string
     skipEmptyLines: true,
     transformHeader: (h: string) => h.trim(),
   });
-  const headers = result.meta.fields ?? [];
-  return { headers, rows: result.data };
+  const rawHeaders = result.meta.fields ?? [];
+  const headers = sanitizeHeaders(rawHeaders);
+
+  // Re-key rows if any headers were renamed
+  const rows = result.data.map((row) => {
+    const out: Record<string, string> = {};
+    rawHeaders.forEach((raw, i) => {
+      out[headers[i]] = row[raw] ?? "";
+    });
+    return out;
+  });
+
+  return { headers, rows };
 }
 
 function parseXLSXContent(buffer: ArrayBuffer): { headers: string[]; rows: Record<string, string>[] } {
@@ -78,12 +93,13 @@ function parseXLSXContent(buffer: ArrayBuffer): { headers: string[]; rows: Recor
 
   if (jsonData.length === 0) return { headers: [], rows: [] };
 
-  const headers = Object.keys(jsonData[0]);
+  const rawHeaders = Object.keys(jsonData[0]);
+  const headers = sanitizeHeaders(rawHeaders);
   const rows = jsonData.map((row) => {
     const strRow: Record<string, string> = {};
-    for (const key of headers) {
-      strRow[key] = String(row[key] ?? "");
-    }
+    rawHeaders.forEach((raw, i) => {
+      strRow[headers[i]] = String(row[raw] ?? "");
+    });
     return strRow;
   });
 

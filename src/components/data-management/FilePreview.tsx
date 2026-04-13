@@ -50,10 +50,14 @@ function truncate(s: string, max: number): string {
   return s.length > max ? s.slice(0, max) + "..." : s;
 }
 
+function isPlaceholderColumn(col: string | null): boolean {
+  return col !== null && /^col_\d+$/.test(col);
+}
+
 function hasAllRequiredMappings(mappings: ColumnMapping[]): boolean {
   return REQUIRED_FIELDS.every((f) => {
     const m = mappings.find((mapping) => mapping.dashboardField === f);
-    return m?.mappedColumn !== null;
+    return m?.mappedColumn !== null && !isPlaceholderColumn(m?.mappedColumn ?? null);
   });
 }
 
