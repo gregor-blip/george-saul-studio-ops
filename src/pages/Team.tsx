@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import type { TimeHorizon } from "@/components/team/types";
+import { useState, useMemo, useCallback } from "react";
+import type { TimeHorizon, Employee } from "@/components/team/types";
 import {
   useEmployees,
   useClients,
@@ -10,6 +10,7 @@ import {
 } from "@/components/team/use-team-data";
 import { CapacityGrid, CapacityGridSkeleton } from "@/components/team/CapacityGrid";
 import { EmployeeCards } from "@/components/team/EmployeeCards";
+import { EmployeeDetailPanel } from "@/components/team/EmployeeDetailPanel";
 import { formatPct } from "@/components/dashboard/format";
 
 const HORIZONS: { key: TimeHorizon; label: string }[] = [
@@ -33,6 +34,15 @@ function getCurrentMonday(): string {
 
 export default function Team() {
   const [horizon, setHorizon] = useState<TimeHorizon>("month");
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+
+  const handleEmployeeClick = useCallback((emp: Employee) => {
+    setSelectedEmployee(emp);
+  }, []);
+
+  const handleClosePanel = useCallback(() => {
+    setSelectedEmployee(null);
+  }, []);
 
   const weeks = useMemo(() => getWeekColumns(horizon), [horizon]);
   const currentWeek = getCurrentMonday();
@@ -144,12 +154,21 @@ export default function Team() {
           weeks={weeks}
           weekMap={weekMap}
           currentWeek={currentWeek}
+          onEmployeeClick={handleEmployeeClick}
         />
       )}
 
       {/* Employee Cards */}
       {employees && utilisation && (
         <EmployeeCards employees={employees} utilisation={currentUtil} />
+      )}
+
+      {/* Employee Detail Panel */}
+      {selectedEmployee && (
+        <EmployeeDetailPanel
+          employee={selectedEmployee}
+          onClose={handleClosePanel}
+        />
       )}
     </div>
   );

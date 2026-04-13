@@ -13,6 +13,7 @@ interface CapacityGridProps {
   weeks: string[];
   weekMap: EmployeeWeekMap;
   currentWeek: string;
+  onEmployeeClick?: (employee: Employee) => void;
 }
 
 function formatWeekLabel(dateStr: string): string {
@@ -178,6 +179,7 @@ export function CapacityGrid({
   weeks,
   weekMap,
   currentWeek,
+  onEmployeeClick,
 }: CapacityGridProps) {
   const [openPopover, setOpenPopover] = useState<string | null>(null);
 
@@ -232,17 +234,22 @@ export function CapacityGrid({
             return (
               <tr key={emp.id} className="border-b border-white/[0.04]">
                 <td className="w-48 flex-shrink-0 px-4 py-3 sticky left-0 bg-[#141414] z-10 border-r border-white/[0.06]">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-white truncate">
-                      {emp.name}
+                  <button
+                    className="text-left w-full group"
+                    onClick={() => onEmployeeClick?.(emp)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-white truncate group-hover:text-blue-400 transition-colors">
+                        {emp.name}
+                      </span>
+                      <span className="text-[10px]">
+                        {COUNTRY_FLAGS[emp.country] ?? COUNTRY_FLAGS.OTHER}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-zinc-600">
+                      {emp.role ?? emp.employment_type}
                     </span>
-                    <span className="text-[10px]">
-                      {COUNTRY_FLAGS[emp.country] ?? COUNTRY_FLAGS.OTHER}
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-zinc-600">
-                    {emp.role ?? emp.employment_type}
-                  </span>
+                  </button>
                 </td>
                 {isWeeklyView && dayColumns
                   ? dayColumns.map((col) => {
