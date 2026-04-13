@@ -70,8 +70,42 @@ function detectImportType(
   return { importType, revenueCount, expenseCount };
 }
 
+// Known QuickBooks header keywords — if a row contains 3+ of these, it's the real header row
+const QB_HEADER_KEYWORDS = [
+  "date", "type", "num", "name", "memo", "memo/description",
+  "description", "split", "amount", "balance", "account",
+  "customer", "transaction date", "transaction type",
+  "item split account", "debit", "credit",
+];
+
+function looksLikeHeaderRow(cells: string[]): boolean {
+  const normed = cells.map((c) => c.trim().toLowerCase());
+  const matches = normed.filter((c) => QB_HEADER_KEYWORDS.includes(c));
+  return matches.length >= 3;
+}
+
 function parseCSVContent(text: string): { headers: string[]; rows: Record<string, string>[] } {
-  const result = Papa.parse<Record<string, string>>(text, {
+  // First pass: parse without headers to find the real header row
+  const raw = Papa.parse<string[]>(text, {
+    header: false,
+    skipEmptyLines: true,
+  });
+  const allRows = raw.data;
+
+  // Find the header row (first row with 3+ known QB column names)
+  let headerIndex = 0;
+  for (let i = 0; i < Math.min(allRows.length, 15); i++) {
+    if (looksLikeHeaderRow(allRows[i])) {
+      headerIndex = i;
+      break;
+    }
+  }
+
+  // Re-parse from the header row onward
+  const dataLines = text.split(/\r?\n/);
+  const trimmedText = dataLines.slice(headerIndex).join("\n");
+
+  const result = Papa.parse<Record<string, string>>(trimmedText, {
     header: true,
     skipEmptyLines: true,
     transformHeader: (h: string) => h.trim(),
@@ -82,8 +116,8 @@ function parseCSVContent(text: string): { headers: string[]; rows: Record<string
   // Re-key rows if any headers were renamed
   const rows = result.data.map((row) => {
     const out: Record<string, string> = {};
-    rawHeaders.forEach((raw, i) => {
-      out[headers[i]] = row[raw] ?? "";
+    rawHeaders.forEach((rawH, i) => {
+      out[headers[i]] = row[rawH] ?? "";
     });
     return out;
   });
