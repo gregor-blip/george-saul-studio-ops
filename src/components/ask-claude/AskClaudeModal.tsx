@@ -78,11 +78,21 @@ export function AskClaudeModal() {
       setIsLoading(true);
 
       try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const accessToken = session?.access_token;
+        if (!accessToken) {
+          setAnswer("You must be logged in to use Ask Claude.");
+          setIsLoading(false);
+          setStreamDone(true);
+          return;
+        }
+
         const response = await fetch(`${SUPABASE_URL}/functions/v1/ask-claude`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            Authorization: `Bearer ${accessToken}`,
+            apikey: SUPABASE_ANON_KEY,
           },
           body: JSON.stringify({
             question: trimmed,
