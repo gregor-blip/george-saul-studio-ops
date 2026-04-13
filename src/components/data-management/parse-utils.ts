@@ -16,7 +16,16 @@ function normalise(s: string): string {
 }
 
 function sanitizeHeaders(raw: string[]): string[] {
-  return raw.map((h, i) => (h.trim() === "" ? `col_${i}` : h));
+  const seen = new Set<string>();
+  return raw.map((h, i) => {
+    let name = h.trim() === "" ? `col_${i}` : h.trim();
+    // Deduplicate: if we've already seen this header, append the index
+    if (seen.has(name)) {
+      name = `${name}_${i}`;
+    }
+    seen.add(name);
+    return name;
+  });
 }
 
 function autoDetectMappings(headers: string[]): ColumnMapping[] {

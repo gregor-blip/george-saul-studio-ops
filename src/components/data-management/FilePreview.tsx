@@ -126,11 +126,13 @@ export function FilePreview({
                 <SelectItem value="__none__" className="text-zinc-500">
                   Not mapped
                 </SelectItem>
-                {file.headers.map((h) => (
-                  <SelectItem key={h} value={h}>
-                    {h}
-                  </SelectItem>
-                ))}
+                {file.headers
+                  .filter((h) => h.trim() !== "")
+                  .map((h, i) => (
+                    <SelectItem key={`${h}-${i}`} value={h}>
+                      {h}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
             <div className="flex justify-center">
