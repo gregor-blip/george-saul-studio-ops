@@ -58,16 +58,17 @@ function derivePaymentStatus(
   return "partial";
 }
 
-async function batchInsert<T extends Record<string, unknown>>(
-  table: string,
-  rows: T[]
+async function batchInsert(
+  table: "qb_revenue" | "qb_expenses",
+  rows: Record<string, unknown>[]
 ): Promise<{ inserted: number; errors: string[] }> {
   const errors: string[] = [];
   let inserted = 0;
 
   for (let i = 0; i < rows.length; i += 100) {
     const batch = rows.slice(i, i + 100);
-    const { error } = await supabase.from(table).insert(batch);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await supabase.from(table).insert(batch as never);
     if (error) {
       errors.push(`Batch ${Math.floor(i / 100) + 1}: ${error.message}`);
     } else {
