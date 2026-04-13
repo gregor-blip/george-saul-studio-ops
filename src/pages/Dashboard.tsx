@@ -52,18 +52,21 @@ export default function Dashboard() {
       {/* KPI Cards */}
       {isLoading || !summary ? <KpiCardsSkeleton /> : <KpiCards summary={summary} />}
 
-      {/* Main content: Top Clients + Revenue Mix */}
-      <div className="grid grid-cols-3 gap-6 mb-8">
+      {/* Top Clients */}
+      <div className="mb-8">
         {isLoading || !clients || !summary ? (
-          <>
-            <TopClientsSkeleton />
-            <RevenueMixSkeleton />
-          </>
+          <TopClientsSkeleton />
         ) : (
-          <>
-            <TopClients clients={clients} summary={summary} />
-            <RevenueMix clients={clients} summary={summary} />
-          </>
+          <TopClients clients={clients} summary={summary} />
+        )}
+      </div>
+
+      {/* Revenue Flow */}
+      <div className="mb-8">
+        {isLoading || !summary ? (
+          <RevenueMixSkeleton />
+        ) : (
+          <RevenueMix summary={summary} />
         )}
       </div>
 

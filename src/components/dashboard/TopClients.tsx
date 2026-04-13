@@ -16,7 +16,7 @@ export function TopClients({ clients, summary }: TopClientsProps) {
   const mediaNames = mediaClients.map((c) => c.client_name).join(", ");
 
   return (
-    <div className="col-span-2 bg-[#141414] rounded-xl border border-white/[0.08] overflow-hidden">
+    <div className="bg-[#141414] rounded-xl border border-white/[0.08] overflow-hidden">
       <div className="px-6 py-4 border-b border-white/[0.06] flex items-center justify-between">
         <h3 className="text-sm font-semibold text-white">Top Agency Clients</h3>
         <button
@@ -100,6 +100,6 @@ export function TopClients({ clients, summary }: TopClientsProps) {
 
 export function TopClientsSkeleton() {
   return (
-    <div className="col-span-2 bg-white/[0.04] rounded-xl animate-pulse h-[340px]" />
+    <div className="bg-white/[0.04] rounded-xl animate-pulse h-[340px]" />
   );
 }
