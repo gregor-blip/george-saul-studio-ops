@@ -52,3 +52,16 @@ export function utilisationColor(pct: number | null): string {
   if (pct >= 50) return "text-amber-400";
   return "text-red-400";
 }
+
+export function mediaMarginColor(pct: number | null): string {
+  if (pct === null) return "text-zinc-600";
+  if (pct >= 20) return "text-emerald-400";
+  if (pct >= 10) return "text-amber-400";
+  return "text-red-400";
+}
+
+export function formatCompactCurrency(value: number): string {
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`;
+  return currencyFmt.format(value);
+}

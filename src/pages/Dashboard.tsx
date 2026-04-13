@@ -4,7 +4,7 @@ import {
   useReceivables,
   computeReceivablesSummary,
 } from "@/components/dashboard/use-dashboard-data";
-import { formatDate, formatMonthYear } from "@/components/dashboard/format";
+import { formatDate, formatMonthYear, formatCompactCurrency } from "@/components/dashboard/format";
 import { KpiCards, KpiCardsSkeleton } from "@/components/dashboard/KpiCards";
 import { TopClients, TopClientsSkeleton } from "@/components/dashboard/TopClients";
 import { RevenueMix, RevenueMixSkeleton } from "@/components/dashboard/RevenueMix";
@@ -30,16 +30,21 @@ export default function Dashboard() {
             Studio Overview
           </h1>
           <p className="text-sm text-zinc-500">
-            Studio-wide margin, utilisation, and revenue health
+            Two-engine model: agency fees + media management
           </p>
         </div>
         {summary && (
           <p className="text-xs text-zinc-700">
-            Financials: {formatMonthYear(summary.financials_last_imported)}{" "}
-            &middot; Allocations:{" "}
+            Agency: {formatCompactCurrency(summary.agency_revenue)}
+            {" \u00B7 "}
+            Media: {formatCompactCurrency(summary.media_spread)} spread
+            {" \u00B7 "}
+            Financials: {formatMonthYear(summary.financials_last_imported)}
+            {" \u00B7 "}
+            Allocations:{" "}
             {summary.allocations_current_week
-              ? `Week of ${formatDate(summary.allocations_current_week)}`
-              : "Not yet imported"}
+              ? formatDate(summary.allocations_current_week)
+              : "not yet set"}
           </p>
         )}
       </div>
@@ -49,15 +54,15 @@ export default function Dashboard() {
 
       {/* Main content: Top Clients + Revenue Mix */}
       <div className="grid grid-cols-3 gap-6 mb-8">
-        {isLoading || !clients ? (
+        {isLoading || !clients || !summary ? (
           <>
             <TopClientsSkeleton />
             <RevenueMixSkeleton />
           </>
         ) : (
           <>
-            <TopClients clients={clients} />
-            <RevenueMix clients={clients} />
+            <TopClients clients={clients} summary={summary} />
+            <RevenueMix clients={clients} summary={summary} />
           </>
         )}
       </div>

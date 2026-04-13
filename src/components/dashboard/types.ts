@@ -1,10 +1,22 @@
 export interface StudioSummary {
-  total_billed: number;
+  // Agency engine
   agency_revenue: number;
   total_allocated_cost: number;
-  blended_margin_pct: number | null;
+  agency_margin_pct: number | null;
+
+  // Media engine
+  media_revenue_billed: number;
+  media_spend: number;
+  media_spread: number;
+  media_margin_pct: number | null;
+
+  // Combined
+  total_billed: number;
+  estimated_net_income: number;
+
+  // Operational
   active_headcount: number;
-  revenue_per_employee: number | null;
+  agency_revenue_per_employee: number | null;
   avg_billable_utilisation_pct: number | null;
   active_projects: number;
   allocations_current_week: string | null;
@@ -14,7 +26,7 @@ export interface StudioSummary {
 export interface ClientProfitability {
   client_id: string;
   client_name: string;
-  is_internal: boolean;
+  business_line: "agency" | "media" | "internal";
   total_revenue: number;
   total_allocated_cost: number;
   gross_margin_pct: number | null;
@@ -22,7 +34,6 @@ export interface ClientProfitability {
   realisation_rate_pct: number | null;
   billing_rate: number;
   total_allocated_hours: number;
-  is_passthrough: boolean;
 }
 
 export interface Receivable {

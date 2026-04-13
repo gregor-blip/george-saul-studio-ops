@@ -32,7 +32,7 @@ export default function Clients() {
   const [selectedClient, setSelectedClient] = useState<ClientProfitability | null>(null);
 
   const coreClients = useMemo(
-    () => (allClients ?? []).filter((c) => !c.is_internal && !c.is_passthrough),
+    () => (allClients ?? []).filter((c) => c.business_line !== "internal"),
     [allClients]
   );
 

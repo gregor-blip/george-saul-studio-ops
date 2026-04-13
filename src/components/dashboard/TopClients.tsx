@@ -1,21 +1,24 @@
 import { useNavigate } from "react-router-dom";
-import type { ClientProfitability } from "./types";
+import type { ClientProfitability, StudioSummary } from "./types";
 import { formatCurrency, formatPct, marginDotColor, marginBgColor } from "./format";
 
 interface TopClientsProps {
   clients: ClientProfitability[];
+  summary: StudioSummary;
 }
 
-export function TopClients({ clients }: TopClientsProps) {
+export function TopClients({ clients, summary }: TopClientsProps) {
   const navigate = useNavigate();
-  const filtered = clients
-    .filter((c) => !c.is_internal && !c.is_passthrough)
+  const agencyClients = clients
+    .filter((c) => c.business_line === "agency")
     .slice(0, 6);
+  const mediaClients = clients.filter((c) => c.business_line === "media");
+  const mediaNames = mediaClients.map((c) => c.client_name).join(", ");
 
   return (
     <div className="col-span-2 bg-[#141414] rounded-xl border border-white/[0.08] overflow-hidden">
       <div className="px-6 py-4 border-b border-white/[0.06] flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Top Clients</h3>
+        <h3 className="text-sm font-semibold text-white">Top Agency Clients</h3>
         <button
           onClick={() => navigate("/clients")}
           className="text-xs text-[#0070F3] hover:underline"
@@ -37,7 +40,7 @@ export function TopClients({ clients }: TopClientsProps) {
           </span>
         </div>
 
-        {filtered.map((client) => (
+        {agencyClients.map((client) => (
           <div
             key={client.client_id}
             className="grid grid-cols-[1fr_100px_140px] items-center px-6 py-3 border-b border-white/[0.04] hover:bg-white/[0.02]"
@@ -69,10 +72,26 @@ export function TopClients({ clients }: TopClientsProps) {
           </div>
         ))}
 
-        {filtered.length === 0 && (
+        {agencyClients.length === 0 && (
           <p className="text-sm text-zinc-700 text-center py-8">
-            No client data yet.
+            No agency client data yet.
           </p>
+        )}
+
+        {/* Media summary row */}
+        {mediaClients.length > 0 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.08] mt-2">
+            <span className="text-xs text-zinc-600">
+              Media clients ({mediaNames})
+            </span>
+            <span className="text-xs tabular-nums text-zinc-500">
+              {formatCurrency(summary.media_revenue_billed)} billed
+              {" \u00B7 "}
+              {formatCurrency(summary.media_spread)} spread
+              {" \u00B7 "}
+              {formatPct(summary.media_margin_pct)} margin
+            </span>
+          </div>
         )}
       </div>
     </div>

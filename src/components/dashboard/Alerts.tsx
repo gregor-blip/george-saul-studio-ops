@@ -14,7 +14,19 @@ function buildAlerts(
   receivables: Receivable[]
 ): AlertItem[] {
   const alerts: AlertItem[] = [];
-  const external = clients.filter((c) => !c.is_internal && !c.is_passthrough);
+  const external = clients.filter((c) => c.business_line === "agency");
+
+  // Media concentration risk
+  if (summary.total_billed > 0) {
+    const mediaPct = (summary.media_revenue_billed / summary.total_billed) * 100;
+    if (mediaPct > 80) {
+      alerts.push({
+        severity: "amber",
+        title: "Media concentration high",
+        body: `Media accounts for ${mediaPct.toFixed(0)}% of total revenue. Agency diversification recommended.`,
+      });
+    }
+  }
 
   // Critical margin (< 30%)
   for (const c of external) {

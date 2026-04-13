@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import type { StudioSummary } from "./types";
-import { formatCurrency, formatPct, marginColor, utilisationColor } from "./format";
+import { formatCurrency, formatPct, marginColor, mediaMarginColor } from "./format";
 
 interface KpiCardsProps {
   summary: StudioSummary;
@@ -33,46 +33,106 @@ function KpiCard({ label, value, sublabel, colorClass = "text-white", index }: C
 
 export function KpiCards({ summary }: KpiCardsProps) {
   return (
-    <div className="grid grid-cols-4 gap-4 mb-8">
-      <KpiCard
-        index={0}
-        label="Studio Margin"
-        value={formatPct(summary.blended_margin_pct)}
-        sublabel="Gross margin on agency revenue"
-        colorClass={marginColor(summary.blended_margin_pct)}
-      />
-      <KpiCard
-        index={1}
-        label="Agency Revenue"
-        value={formatCurrency(summary.agency_revenue)}
-        sublabel="Core fees excl. media pass-through"
-      />
-      <KpiCard
-        index={2}
-        label="Avg Utilisation"
-        value={formatPct(summary.avg_billable_utilisation_pct)}
-        sublabel="Billable hours vs available hours"
-        colorClass={utilisationColor(summary.avg_billable_utilisation_pct)}
-      />
-      <KpiCard
-        index={3}
-        label="Active Projects"
-        value={String(summary.active_projects)}
-        sublabel="Projects currently in scope"
-      />
+    <div className="mb-8">
+      {/* Agency Engine */}
+      <p className="text-[11px] uppercase tracking-wider text-zinc-600 mb-3">
+        Agency — Creative, Retainers, Strategy
+      </p>
+      <div className="grid grid-cols-3 gap-4 mb-3">
+        <KpiCard
+          index={0}
+          label="Agency Revenue"
+          value={formatCurrency(summary.agency_revenue)}
+          sublabel="Core fees excl. media"
+        />
+        <KpiCard
+          index={1}
+          label="Agency Margin"
+          value={formatPct(summary.agency_margin_pct)}
+          sublabel="Gross margin on agency fees"
+          colorClass={marginColor(summary.agency_margin_pct)}
+        />
+        <KpiCard
+          index={2}
+          label="Revenue per Head"
+          value={
+            summary.agency_revenue_per_employee !== null
+              ? formatCurrency(summary.agency_revenue_per_employee)
+              : "\u2014"
+          }
+          sublabel="Agency revenue \u00F7 team"
+        />
+      </div>
+
+      {/* Media Engine */}
+      <p className="text-[11px] uppercase tracking-wider text-zinc-600 mb-3 mt-6">
+        Media — Paid Media Management
+      </p>
+      <div className="grid grid-cols-3 gap-4 mb-3">
+        <KpiCard
+          index={3}
+          label="Media Billed"
+          value={formatCurrency(summary.media_revenue_billed)}
+          sublabel="Billed to clients for media"
+        />
+        <KpiCard
+          index={4}
+          label="Media Spread"
+          value={formatCurrency(summary.media_spread)}
+          sublabel="G&S keeps after platform costs"
+        />
+        <KpiCard
+          index={5}
+          label="Media Margin"
+          value={formatPct(summary.media_margin_pct)}
+          sublabel="Spread \u00F7 media billed"
+          colorClass={mediaMarginColor(summary.media_margin_pct)}
+        />
+      </div>
+
+      {/* Combined */}
+      <p className="text-[11px] uppercase tracking-wider text-zinc-600 mb-3 mt-6">
+        Combined
+      </p>
+      <div className="grid grid-cols-2 gap-4">
+        <KpiCard
+          index={6}
+          label="Total Billed"
+          value={formatCurrency(summary.total_billed)}
+          sublabel="Agency + media combined"
+        />
+        <KpiCard
+          index={7}
+          label="Active Projects"
+          value={String(summary.active_projects)}
+          sublabel="Projects currently in scope"
+        />
+      </div>
     </div>
   );
 }
 
 export function KpiCardsSkeleton() {
   return (
-    <div className="grid grid-cols-4 gap-4 mb-8">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div
-          key={i}
-          className="h-32 bg-white/[0.04] rounded-xl animate-pulse"
-        />
-      ))}
+    <div className="mb-8">
+      <div className="h-3 w-48 bg-white/[0.04] rounded animate-pulse mb-3" />
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="h-32 bg-white/[0.04] rounded-xl animate-pulse" />
+        ))}
+      </div>
+      <div className="h-3 w-40 bg-white/[0.04] rounded animate-pulse mb-3" />
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="h-32 bg-white/[0.04] rounded-xl animate-pulse" />
+        ))}
+      </div>
+      <div className="h-3 w-24 bg-white/[0.04] rounded animate-pulse mb-3" />
+      <div className="grid grid-cols-2 gap-4">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div key={i} className="h-32 bg-white/[0.04] rounded-xl animate-pulse" />
+        ))}
+      </div>
     </div>
   );
 }
