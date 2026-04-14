@@ -123,28 +123,35 @@ export function RevenueMix({ summary }: RevenueMixProps) {
           <span className="text-white/40 text-xl select-none">&darr;</span>
         </div>
 
-        {/* OpEx and Net Income side by side */}
-        <div className="flex items-stretch gap-4">
-          <div className="flex-1 bg-[#6B1B1B] border border-red-400/50 rounded-xl p-5">
+        {/* OpEx breakdown and Net Income */}
+        <div className="flex items-stretch">
+          <div className="flex-1 bg-[#6B1B1B] border border-red-400/50 rounded-xl p-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
-              Operating Expenses
+              People Cost
             </p>
-            <p className="text-2xl font-bold tabular-nums tracking-tight text-red-300">
-              ({fmtM(opex)})
+            <p className="text-2xl font-bold tabular-nums text-red-300">
+              ({fmtM(summary.people_cost)})
             </p>
           </div>
-          <span className="text-white/40 text-2xl shrink-0 self-center select-none font-light">
-            =
-          </span>
-          <div className="flex-1 bg-[#4A3500] border border-amber-400/50 rounded-xl p-5">
+          <span className="text-white/30 text-xl self-center mx-3 select-none">+</span>
+          <div className="flex-1 bg-[#3D1010] border border-red-400/30 rounded-xl p-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-2">
+              Overhead & Other
+            </p>
+            <p className="text-2xl font-bold tabular-nums text-red-200/70">
+              ({fmtM(summary.overhead_cost)})
+            </p>
+          </div>
+          <span className="text-white/30 text-xl self-center mx-3 select-none">=</span>
+          <div className="flex-1 bg-[#2A1F00] border border-amber-400/50 rounded-xl p-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
               Net Income
             </p>
-            <p className="text-2xl font-bold tabular-nums tracking-tight text-amber-400">
+            <p className="text-2xl font-bold tabular-nums text-amber-400">
               {fmtM(summary.estimated_net_income)}
             </p>
             {netMarginPct && (
-              <p className="text-sm text-white/40 mt-1">
+              <p className="text-xs text-amber-600 mt-1">
                 {netMarginPct}% net margin
               </p>
             )}
