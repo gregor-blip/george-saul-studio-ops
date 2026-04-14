@@ -157,12 +157,44 @@ export function RevenueMix({ summary }: RevenueMixProps) {
 
       {/* ── COMBINED SECTION ── */}
       <div className="bg-[#0D0D11] rounded-lg border border-zinc-900 p-5 mt-4">
-        <p className="text-[9px] uppercase tracking-widest text-zinc-700">
-          Combined Gross Profit
-        </p>
-        <p className="text-sm font-semibold text-white mt-1">
-          {fmtM(summary.media_spread)} (media spread) + {fmtM(agencyGrossProfit)} (core business) = {fmtM(combinedGross)}
-        </p>
+        <div className="flex items-stretch">
+          {/* Media Spread */}
+          <div className="relative flex-1 overflow-hidden rounded-lg bg-[#121214] border border-[#262628] p-4">
+            <div className="absolute left-0 top-1 bottom-1 w-0.5 rounded-full bg-[#41B972]" />
+            <p className="text-[9px] uppercase tracking-widest text-zinc-600 mb-2">
+              Media Spread
+            </p>
+            <p className="text-2xl font-bold tabular-nums text-[#41B972]">
+              {fmtM(summary.media_spread)}
+            </p>
+          </div>
+
+          <span className="text-zinc-700 text-base self-center mx-2 select-none">+</span>
+
+          {/* Agency Gross Profit */}
+          <div className="relative flex-1 overflow-hidden rounded-lg bg-[#121214] border border-[#262628] p-4">
+            <div className="absolute left-0 top-1 bottom-1 w-0.5 rounded-full bg-[#41AEB9]" />
+            <p className="text-[9px] uppercase tracking-widest text-zinc-600 mb-2">
+              Agency Gross Profit
+            </p>
+            <p className="text-2xl font-bold tabular-nums text-[#41AEB9]">
+              {fmtM(agencyGrossProfit)}
+            </p>
+          </div>
+
+          <span className="text-zinc-700 text-base self-center mx-2 select-none">=</span>
+
+          {/* Combined Gross Profit */}
+          <div className="relative flex-1 overflow-hidden rounded-lg bg-[#121214] border border-[#262628] p-4">
+            <div className="absolute left-0 top-1 bottom-1 w-0.5 rounded-full bg-zinc-600" />
+            <p className="text-[9px] uppercase tracking-widest text-zinc-600 mb-2">
+              Combined Gross Profit
+            </p>
+            <p className="text-2xl font-bold tabular-nums text-white">
+              {fmtM(combinedGross)}
+            </p>
+          </div>
+        </div>
 
         <div className="border-t border-zinc-900 my-4" />
 
