@@ -251,7 +251,9 @@ export async function runImport(
         continue;
       }
 
-      const isCreditMemo = txnType.toLowerCase() === "credit memo";
+      const txnLower = txnType.toLowerCase();
+      const isCreditMemo = txnLower === "credit memo";
+      const isDeposit = txnLower === "deposit";
       const amount = isCreditMemo ? -Math.abs(parsedAmount) : parsedAmount;
       const balanceRaw = getMappedValue(row, "balance", mappings);
 
@@ -261,7 +263,7 @@ export async function runImport(
         invoice_number: getMappedValue(row, "invoice_number", mappings).trim() || null,
         invoice_date: parseQBDate(getMappedValue(row, "transaction_date", mappings)),
         amount,
-        payment_status: derivePaymentStatus(amountRaw, balanceRaw),
+        payment_status: isDeposit ? "paid" : derivePaymentStatus(amountRaw, balanceRaw),
         account_code: currentAccountCode,
         account_name: currentAccountName,
       });

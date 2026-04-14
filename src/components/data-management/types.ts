@@ -64,5 +64,5 @@ export const REQUIRED_FIELDS = [
   "amount",
 ];
 
-export const REVENUE_TYPES = ["Invoice", "Credit Memo"];
+export const REVENUE_TYPES = ["Invoice", "Credit Memo", "Deposit"];
 export const EXPENSE_TYPES = ["Expense", "Check", "Bill", "Bill Payment", "Journal Entry"];
