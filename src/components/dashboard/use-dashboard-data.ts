@@ -89,24 +89,22 @@ async function fetchStudioSummary(period: Period): Promise<StudioSummary> {
   );
 
   // 4. Allocated cost from client profitability RPC (period-filtered)
-  let allocQuery = supabase.rpc("get_client_profitability_by_period", {
-    p_start: range.start,
-    p_end: range.end,
-  });
-  const { data: allocRows, error: allocErr } = await allocQuery;
+  const { data: allocRows, error: allocErr } = await supabase.rpc(
+    "get_client_profitability_by_period" as "gs_setting",
+    { p_start: range.start, p_end: range.end } as { key: string }
+  );
   if (allocErr) throw allocErr;
-  const totalAllocatedCost = (allocRows ?? []).reduce(
-    (sum: number, r: any) => sum + (Number(r.total_allocated_cost) || 0),
+  const allocArray = Array.isArray(allocRows) ? allocRows : [];
+  const totalAllocatedCost = allocArray.reduce(
+    (sum: number, r: Record<string, unknown>) =>
+      sum + (Number(r.total_allocated_cost) || 0),
     0
   );
 
   // 5. Operational fields (period-independent) from v_studio_summary
   const { data: ops, error: opsErr } = await supabase
     .from("v_studio_summary")
-    .select(
-      "active_headcount, avg_billable_utilisation_pct, active_projects, " +
-      "allocations_current_week, financials_last_imported"
-    )
+    .select("*")
     .single();
   if (opsErr) throw opsErr;
 
