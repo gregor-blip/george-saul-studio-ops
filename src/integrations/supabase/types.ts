@@ -170,6 +170,7 @@ export type Database = {
       clients: {
         Row: {
           billing_rate: number
+          business_line: string
           created_at: string
           id: string
           is_internal: boolean
@@ -181,6 +182,7 @@ export type Database = {
         }
         Insert: {
           billing_rate?: number
+          business_line?: string
           created_at?: string
           id?: string
           is_internal?: boolean
@@ -192,6 +194,7 @@ export type Database = {
         }
         Update: {
           billing_rate?: number
+          business_line?: string
           created_at?: string
           id?: string
           is_internal?: boolean
@@ -424,39 +427,122 @@ export type Database = {
         }
         Relationships: []
       }
+      lego_assignments: {
+        Row: {
+          assigned_employee_id: string | null
+          assigned_role_type: string | null
+          child_lego_id: string
+          created_at: string | null
+          hours_override: number | null
+          id: string
+          notes: string | null
+          parent_lego_id: string
+          sort_order: number
+        }
+        Insert: {
+          assigned_employee_id?: string | null
+          assigned_role_type?: string | null
+          child_lego_id: string
+          created_at?: string | null
+          hours_override?: number | null
+          id?: string
+          notes?: string | null
+          parent_lego_id: string
+          sort_order?: number
+        }
+        Update: {
+          assigned_employee_id?: string | null
+          assigned_role_type?: string | null
+          child_lego_id?: string
+          created_at?: string | null
+          hours_override?: number | null
+          id?: string
+          notes?: string | null
+          parent_lego_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lego_assignments_assigned_employee_id_fkey"
+            columns: ["assigned_employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lego_assignments_assigned_employee_id_fkey"
+            columns: ["assigned_employee_id"]
+            isOneToOne: false
+            referencedRelation: "v_employee_utilisation"
+            referencedColumns: ["employee_id"]
+          },
+          {
+            foreignKeyName: "lego_assignments_child_lego_id_fkey"
+            columns: ["child_lego_id"]
+            isOneToOne: false
+            referencedRelation: "lego_catalogue"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lego_assignments_parent_lego_id_fkey"
+            columns: ["parent_lego_id"]
+            isOneToOne: false
+            referencedRelation: "lego_catalogue"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lego_catalogue: {
         Row: {
+          billing_label: string | null
           category: string | null
+          color: string
           confidence: string
           created_at: string
+          default_role_type: string | null
           description: string | null
           estimated_hours: number
           id: string
           is_active: boolean
+          is_recurring: boolean
           name: string
           parent_lego_id: string | null
+          recurrence_cadence: string | null
+          sort_order: number
         }
         Insert: {
+          billing_label?: string | null
           category?: string | null
+          color?: string
           confidence?: string
           created_at?: string
+          default_role_type?: string | null
           description?: string | null
           estimated_hours: number
           id?: string
           is_active?: boolean
+          is_recurring?: boolean
           name: string
           parent_lego_id?: string | null
+          recurrence_cadence?: string | null
+          sort_order?: number
         }
         Update: {
+          billing_label?: string | null
           category?: string | null
+          color?: string
           confidence?: string
           created_at?: string
+          default_role_type?: string | null
           description?: string | null
           estimated_hours?: number
           id?: string
           is_active?: boolean
+          is_recurring?: boolean
           name?: string
           parent_lego_id?: string | null
+          recurrence_cadence?: string | null
+          sort_order?: number
         }
         Relationships: [
           {
@@ -813,27 +899,6 @@ export type Database = {
           },
         ]
       }
-      user_roles: {
-        Row: {
-          id: string
-          user_id: string
-          role: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          role?: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          role?: string
-          created_at?: string
-        }
-        Relationships: []
-      }
       recurring_allocations: {
         Row: {
           allocated_hours: number
@@ -1033,6 +1098,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       weekly_allocations: {
         Row: {
           actual_outcome: string | null
@@ -1205,12 +1291,11 @@ export type Database = {
       v_client_profitability: {
         Row: {
           billing_rate: number | null
+          business_line: string | null
           client_id: string | null
           client_name: string | null
           effective_hourly_rate: number | null
           gross_margin_pct: number | null
-          is_internal: boolean | null
-          is_passthrough: boolean | null
           realisation_rate_pct: number | null
           total_allocated_cost: number | null
           total_allocated_hours: number | null
@@ -1218,14 +1303,31 @@ export type Database = {
         }
         Relationships: []
       }
+      v_costs_monthly: {
+        Row: {
+          fiscal_month: number | null
+          fiscal_year: number | null
+          half: string | null
+          half_label: string | null
+          media_spend: number | null
+          month_label: string | null
+          overhead_cost: number | null
+          people_cost: number | null
+          production_cost: number | null
+          quarter_label: string | null
+          quarter_number: number | null
+          total_cost: number | null
+        }
+        Relationships: []
+      }
       v_effective_rate: {
         Row: {
           below_billing_rate: boolean | null
           billing_rate: number | null
+          business_line: string | null
           client_id: string | null
           client_name: string | null
           effective_hourly_rate: number | null
-          is_passthrough: boolean | null
           realisation_rate_pct: number | null
           total_allocated_hours: number | null
           total_revenue: number | null
@@ -1251,6 +1353,40 @@ export type Database = {
         }
         Relationships: []
       }
+      v_expenses_by_period: {
+        Row: {
+          account_code: string | null
+          account_name: string | null
+          amount: number | null
+          business_line: string | null
+          category: string | null
+          client_name: string | null
+          client_name_raw: string | null
+          created_at: string | null
+          description: string | null
+          expense_date: string | null
+          expense_type: string | null
+          fiscal_month: number | null
+          fiscal_year: number | null
+          half: string | null
+          half_label: string | null
+          id: string | null
+          import_run_id: string | null
+          month_label: string | null
+          quarter_label: string | null
+          quarter_number: number | null
+          vendor: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qb_expenses_import_run_id_fkey"
+            columns: ["import_run_id"]
+            isOneToOne: false
+            referencedRelation: "import_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_forecast: {
         Row: {
           available_capacity_hours: number | null
@@ -1259,6 +1395,21 @@ export type Database = {
           confirmed_hours_needed: number | null
           confirmed_revenue_90d: number | null
           probable_revenue: number | null
+        }
+        Relationships: []
+      }
+      v_media_monthly_total: {
+        Row: {
+          fiscal_month: number | null
+          fiscal_year: number | null
+          half: string | null
+          half_label: string | null
+          invoice_count: number | null
+          media_billed: number | null
+          media_clients: number | null
+          month_label: string | null
+          quarter_label: string | null
+          quarter_number: number | null
         }
         Relationships: []
       }
@@ -1296,24 +1447,95 @@ export type Database = {
         }
         Relationships: []
       }
+      v_revenue_by_period: {
+        Row: {
+          account_code: string | null
+          account_name: string | null
+          amount: number | null
+          business_line: string | null
+          client_name: string | null
+          client_name_raw: string | null
+          created_at: string | null
+          fiscal_month: number | null
+          fiscal_year: number | null
+          half: string | null
+          half_label: string | null
+          id: string | null
+          import_run_id: string | null
+          invoice_date: string | null
+          invoice_number: string | null
+          month_label: string | null
+          payment_date: string | null
+          payment_status: string | null
+          quarter_label: string | null
+          quarter_number: number | null
+          revenue_type: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qb_revenue_import_run_id_fkey"
+            columns: ["import_run_id"]
+            isOneToOne: false
+            referencedRelation: "import_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_revenue_monthly_total: {
+        Row: {
+          active_clients: number | null
+          agency_revenue: number | null
+          fiscal_month: number | null
+          fiscal_year: number | null
+          half: string | null
+          half_label: string | null
+          invoice_count: number | null
+          month_label: string | null
+          quarter_label: string | null
+          quarter_number: number | null
+        }
+        Relationships: []
+      }
       v_studio_summary: {
         Row: {
           active_headcount: number | null
           active_projects: number | null
+          agency_margin_pct: number | null
           agency_revenue: number | null
+          agency_revenue_per_employee: number | null
           allocations_current_week: string | null
           avg_billable_utilisation_pct: number | null
-          blended_margin_pct: number | null
+          estimated_net_income: number | null
           financials_last_imported: string | null
-          revenue_per_employee: number | null
-          total_allocated_cost: number | null
+          media_margin_pct: number | null
+          media_revenue_billed: number | null
+          media_spend: number | null
+          media_spread: number | null
+          overhead_cost: number | null
+          people_cost: number | null
           total_billed: number | null
         }
         Relationships: []
       }
     }
     Functions: {
+      get_client_profitability_by_period: {
+        Args: { p_end?: string; p_start?: string }
+        Returns: {
+          billing_rate: number
+          business_line: string
+          client_id: string
+          client_name: string
+          effective_hourly_rate: number
+          gross_margin_pct: number
+          realisation_rate_pct: number
+          total_allocated_cost: number
+          total_allocated_hours: number
+          total_revenue: number
+        }[]
+      }
       gs_setting: { Args: { key: string }; Returns: number }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
