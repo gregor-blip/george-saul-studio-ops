@@ -65,7 +65,7 @@ async function fetchStudioSummary(period: Period): Promise<StudioSummary> {
   // 3. All costs from v_costs_monthly (media_spend, people, overhead)
   let costsQuery = supabase
     .from("v_costs_monthly" as any)
-    .select("fiscal_year, people_cost, media_spend, overhead_cost");
+    .select("fiscal_year, people_cost, media_spend, overhead_cost, production_cost");
   if (fiscalYears) {
     costsQuery = costsQuery.in("fiscal_year", fiscalYears);
   }
@@ -81,6 +81,10 @@ async function fetchStudioSummary(period: Period): Promise<StudioSummary> {
   );
   const overheadCost = (costsRows ?? []).reduce(
     (sum: number, r: any) => sum + (Number(r.overhead_cost) || 0),
+    0
+  );
+  const productionCost = (costsRows ?? []).reduce(
+    (sum: number, r: any) => sum + (Number(r.production_cost) || 0),
     0
   );
 
@@ -120,6 +124,7 @@ async function fetchStudioSummary(period: Period): Promise<StudioSummary> {
         : Math.round(
             ((agencyRevenue - agencyTotalCost) / agencyRevenue) * 10000
           ) / 100,
+    production_cost: productionCost,
     people_cost: peopleCost,
     overhead_cost: overheadCost,
     media_revenue_billed: mediaRevenueBilled,

@@ -5,6 +5,7 @@ export interface StudioSummary {
   agency_margin_pct: number | null;
 
   // Cost breakdown (from qb_expenses via v_costs_monthly)
+  production_cost: number;
   people_cost: number;
   overhead_cost: number;
 
