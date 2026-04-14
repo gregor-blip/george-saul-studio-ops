@@ -110,7 +110,7 @@ export function RevenueMix({ summary }: RevenueMixProps) {
           )}
         </div>
         <Arrow />
-        <div className="flex-1 bg-[#6B1B1B] border border-red-400/50 rounded-xl p-5">
+        <div className="flex-1 bg-[#6B1B1B] border border-red-400/50 rounded-xl p-5 opacity-80">
           <p className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
             Overhead
           </p>
