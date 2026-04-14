@@ -89,7 +89,18 @@ export default function Dashboard() {
       )}
 
       {/* KPI Cards */}
-      {isLoading || !summary ? <KpiCardsSkeleton /> : <KpiCards summary={summary} />}
+      {isLoading || !summary ? (
+        <KpiCardsSkeleton />
+      ) : (
+        <KpiCards
+          summary={summary}
+          activeClientCount={
+            clients
+              ? clients.filter((c) => c.total_revenue > 0).length
+              : undefined
+          }
+        />
+      )}
 
       {/* Top Clients */}
       <div className="mb-8">

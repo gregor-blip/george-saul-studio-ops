@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import type { StudioSummary } from "./types";
-import { formatCurrency, formatPct, marginColor, mediaMarginColor } from "./format";
+import { formatCurrency, formatPct, mediaMarginColor } from "./format";
 
 interface KpiCardsProps {
   summary: StudioSummary;
+  activeClientCount?: number;
 }
 
 interface CardProps {
@@ -31,7 +32,7 @@ function KpiCard({ label, value, sublabel, colorClass = "text-white", index }: C
   );
 }
 
-export function KpiCards({ summary }: KpiCardsProps) {
+export function KpiCards({ summary, activeClientCount }: KpiCardsProps) {
   return (
     <div className="mb-8">
       {/* Agency Engine */}
@@ -47,13 +48,6 @@ export function KpiCards({ summary }: KpiCardsProps) {
         />
         <KpiCard
           index={1}
-          label="Agency Margin"
-          value={formatPct(summary.agency_margin_pct)}
-          sublabel="Gross margin on agency fees"
-          colorClass={marginColor(summary.agency_margin_pct)}
-        />
-        <KpiCard
-          index={2}
           label="Revenue per Head"
           value={
             summary.agency_revenue_per_employee !== null
@@ -61,6 +55,12 @@ export function KpiCards({ summary }: KpiCardsProps) {
               : "\u2014"
           }
           sublabel="Agency revenue \u00F7 team"
+        />
+        <KpiCard
+          index={2}
+          label="Active Clients"
+          value={activeClientCount !== undefined ? String(activeClientCount) : "\u2014"}
+          sublabel="Clients billed this period"
         />
       </div>
 
