@@ -7,7 +7,6 @@ import {
 } from "@/components/dashboard/use-dashboard-data";
 import type { Period } from "@/components/dashboard/use-dashboard-data";
 import { formatDate, formatMonthYear, formatCompactCurrency } from "@/components/dashboard/format";
-import { KpiCards, KpiCardsSkeleton } from "@/components/dashboard/KpiCards";
 import { TopClients, TopClientsSkeleton } from "@/components/dashboard/TopClients";
 import { RevenueMix, RevenueMixSkeleton } from "@/components/dashboard/RevenueMix";
 import { Alerts, AlertsSkeleton } from "@/components/dashboard/Alerts";
@@ -88,19 +87,14 @@ export default function Dashboard() {
         </p>
       )}
 
-      {/* KPI Cards */}
-      {isLoading || !summary ? (
-        <KpiCardsSkeleton />
-      ) : (
-        <KpiCards
-          summary={summary}
-          activeClientCount={
-            clients
-              ? clients.filter((c) => c.total_revenue > 0).length
-              : undefined
-          }
-        />
-      )}
+      {/* Revenue Flow */}
+      <div className="mb-8">
+        {isLoading || !summary ? (
+          <RevenueMixSkeleton />
+        ) : (
+          <RevenueMix summary={summary} />
+        )}
+      </div>
 
       {/* Top Clients */}
       <div className="mb-8">
@@ -108,15 +102,6 @@ export default function Dashboard() {
           <TopClientsSkeleton />
         ) : (
           <TopClients clients={clients} summary={summary} />
-        )}
-      </div>
-
-      {/* Revenue Flow */}
-      <div className="mb-8">
-        {isLoading || !summary ? (
-          <RevenueMixSkeleton />
-        ) : (
-          <RevenueMix summary={summary} />
         )}
       </div>
 
