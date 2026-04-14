@@ -72,7 +72,7 @@ function detectImportType(
 
 // Known QuickBooks header keywords — if a row contains 3+ of these, it's the real header row
 const QB_HEADER_KEYWORDS = [
-  "date", "type", "num", "name", "memo", "memo/description",
+  "date", "type", "num", "name", "class", "memo", "memo/description",
   "description", "split", "amount", "balance", "account",
   "customer", "transaction date", "transaction type",
   "item split account", "debit", "credit",

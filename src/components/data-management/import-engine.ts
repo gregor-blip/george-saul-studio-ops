@@ -34,14 +34,15 @@ function shouldSkipRow(
     return "header row";
   }
 
+  const classVal = getMappedValue(row, "client_class", mappings).trim();
   const nameVal = getMappedValue(row, "client_name_raw", mappings);
-  if (nameVal.startsWith("Total")) return "summary row";
+  if (nameVal.startsWith("Total") || classVal.startsWith("Total")) return "summary row";
 
   const amountVal = getMappedValue(row, "amount", mappings);
   const parsed = parseAmount(amountVal);
   if (parsed === null || parsed === 0) return "empty or zero amount";
 
-  if (!nameVal.trim()) return "missing client name";
+  if (!nameVal.trim() && !classVal) return "missing client name";
 
   return null;
 }
@@ -133,20 +134,28 @@ export async function runImport(
       const amount = isCreditMemo ? -Math.abs(parsedAmount) : parsedAmount;
       const balanceRaw = getMappedValue(row, "balance", mappings);
 
+      // Prefer Class column (clean canonical name) over Name column
+      const classValue = getMappedValue(row, "client_class", mappings).trim();
+      const nameValue = getMappedValue(row, "client_name_raw", mappings).trim();
+      const clientName = classValue || nameValue;
+
       revenueRows.push({
         import_run_id: runId,
-        client_name_raw: getMappedValue(row, "client_name_raw", mappings).trim(),
+        client_name_raw: clientName,
         invoice_number: getMappedValue(row, "invoice_number", mappings).trim() || null,
         invoice_date: parseQBDate(getMappedValue(row, "transaction_date", mappings)),
         amount,
         payment_status: derivePaymentStatus(amountRaw, balanceRaw),
       });
     } else if (isExpense) {
+      const expClassValue = getMappedValue(row, "client_class", mappings).trim();
+      const expNameValue = getMappedValue(row, "client_name_raw", mappings).trim();
+
       expenseRows.push({
         import_run_id: runId,
         expense_date: parseQBDate(getMappedValue(row, "transaction_date", mappings)),
         category: getMappedValue(row, "account", mappings).trim() || null,
-        vendor: getMappedValue(row, "client_name_raw", mappings).trim() || null,
+        vendor: expClassValue || expNameValue || null,
         amount: Math.abs(parsedAmount),
         description: getMappedValue(row, "memo", mappings).trim() || null,
       });
