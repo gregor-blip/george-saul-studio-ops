@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import {
@@ -12,6 +13,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import type { LucideIcon } from "lucide-react";
 
 interface NavItem {
@@ -28,8 +30,11 @@ const mainNav: NavItem[] = [
   { label: "Pipeline", to: "/pipeline", icon: TrendingUp },
 ];
 
-const dataNav: NavItem[] = [
+const adminDataNav: NavItem[] = [
   { label: "Import & Sync", to: "/data", icon: Upload },
+];
+
+const viewerDataNav: NavItem[] = [
   { label: "Lego Catalogue", to: "/settings/legos", icon: Layers },
 ];
 
@@ -45,6 +50,8 @@ function SidebarSection({
   items: NavItem[];
 }) {
   const { pathname } = useLocation();
+
+  if (items.length === 0) return null;
 
   return (
     <div>
@@ -81,6 +88,25 @@ function SidebarSection({
 
 export function AppSidebar() {
   const { user, signOut } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    async function checkRole() {
+      if (!user) return;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .single();
+      setIsAdmin(data?.role === "admin");
+    }
+    checkRole();
+  }, [user]);
+
+  const dataNav = [
+    ...(isAdmin ? adminDataNav : []),
+    ...viewerDataNav,
+  ];
 
   return (
     <aside className="flex h-screen w-60 shrink-0 flex-col border-r border-border bg-background px-3 py-4">

@@ -13,6 +13,7 @@ import Team from "@/pages/Team";
 import Projects from "@/pages/Projects";
 import Pipeline from "@/pages/Pipeline";
 import DataManagement from "@/pages/DataManagement";
+import { AdminRoute } from "@/components/auth/AdminRoute";
 import LegoCatalogue from "@/pages/LegoCatalogue";
 import Benchmarks from "@/pages/Benchmarks";
 import NotFound from "@/pages/NotFound";
@@ -47,7 +48,7 @@ const App = () => (
               <Route path="/team" element={<Team />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/pipeline" element={<Pipeline />} />
-              <Route path="/data" element={<DataManagement />} />
+              <Route path="/data" element={<AdminRoute><DataManagement /></AdminRoute>} />
               <Route path="/settings/legos" element={<LegoCatalogue />} />
               <Route path="/benchmarks" element={<Benchmarks />} />
             </Route>
