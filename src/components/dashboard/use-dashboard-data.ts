@@ -89,9 +89,9 @@ async function fetchStudioSummary(period: Period): Promise<StudioSummary> {
   );
 
   // 4. Allocated cost from client profitability RPC (period-filtered)
-  const { data: allocRows, error: allocErr } = await supabase.rpc(
-    "get_client_profitability_by_period" as "gs_setting",
-    { p_start: range.start, p_end: range.end } as { key: string }
+  const { data: allocRows, error: allocErr } = await (supabase.rpc as Function)(
+    "get_client_profitability_by_period",
+    { p_start: range.start, p_end: range.end }
   );
   if (allocErr) throw allocErr;
   const allocArray = Array.isArray(allocRows) ? allocRows : [];
