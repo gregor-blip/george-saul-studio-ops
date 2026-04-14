@@ -62,24 +62,29 @@ async function fetchStudioSummary(period: Period): Promise<StudioSummary> {
     0
   );
 
-  // 3. Media spend from qb_expenses (platform vendors)
-  let expenseQuery = supabase
-    .from("qb_expenses")
-    .select("amount, expense_date")
-    .or(
-      "vendor.ilike.%stackadapt%,vendor.ilike.%facebook%,vendor.ilike.%google ads%," +
-      "category.ilike.%stackadapt%,category.ilike.%facebook%,category.ilike.%google%,category.ilike.%advertising%"
-    );
-  if (range.start) expenseQuery = expenseQuery.gte("expense_date", range.start);
-  if (range.end) expenseQuery = expenseQuery.lt("expense_date", range.end);
-  const { data: expenseRows, error: expenseErr } = await expenseQuery;
-  if (expenseErr) throw expenseErr;
-  const mediaSpend = (expenseRows ?? []).reduce(
-    (sum, r) => sum + (Number(r.amount) || 0),
+  // 3. All costs from v_costs_monthly (media_spend, people, overhead)
+  let costsQuery = supabase
+    .from("v_costs_monthly" as any)
+    .select("fiscal_year, people_cost, media_spend, overhead_cost");
+  if (fiscalYears) {
+    costsQuery = costsQuery.in("fiscal_year", fiscalYears);
+  }
+  const { data: costsRows, error: costsErr } = await costsQuery;
+  if (costsErr) throw costsErr;
+  const mediaSpend = (costsRows ?? []).reduce(
+    (sum: number, r: any) => sum + (Number(r.media_spend) || 0),
+    0
+  );
+  const peopleCost = (costsRows ?? []).reduce(
+    (sum: number, r: any) => sum + (Number(r.people_cost) || 0),
+    0
+  );
+  const overheadCost = (costsRows ?? []).reduce(
+    (sum: number, r: any) => sum + (Number(r.overhead_cost) || 0),
     0
   );
 
-  // 4. Allocated cost from weekly_allocations (period-filtered)
+  // 4. Allocated cost from client profitability RPC (period-filtered)
   let allocQuery = supabase.rpc("get_client_profitability_by_period", {
     p_start: range.start,
     p_end: range.end,
@@ -88,24 +93,6 @@ async function fetchStudioSummary(period: Period): Promise<StudioSummary> {
   if (allocErr) throw allocErr;
   const totalAllocatedCost = (allocRows ?? []).reduce(
     (sum: number, r: any) => sum + (Number(r.total_allocated_cost) || 0),
-    0
-  );
-
-  // 4b. People cost and overhead from v_costs_monthly
-  let costsQuery = supabase
-    .from("v_costs_monthly" as any)
-    .select("people_cost, overhead_cost, fiscal_year");
-  if (fiscalYears) {
-    costsQuery = costsQuery.in("fiscal_year", fiscalYears);
-  }
-  const { data: costsRows, error: costsErr } = await costsQuery;
-  if (costsErr) throw costsErr;
-  const peopleCost = (costsRows ?? []).reduce(
-    (sum: number, r: any) => sum + (Number(r.people_cost) || 0),
-    0
-  );
-  const overheadCost = (costsRows ?? []).reduce(
-    (sum: number, r: any) => sum + (Number(r.overhead_cost) || 0),
     0
   );
 
