@@ -129,24 +129,42 @@ function parseXLSXContent(buffer: ArrayBuffer): { headers: string[]; rows: Recor
   const workbook = XLSX.read(buffer, { type: "array" });
   const sheetName = workbook.SheetNames[0];
   const sheet = workbook.Sheets[sheetName];
-  const jsonData = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
+
+  // First pass: read as array-of-arrays to detect preamble rows
+  const allRows = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
+    header: 1,
     defval: "",
     raw: false,
   });
 
-  if (jsonData.length === 0) return { headers: [], rows: [] };
+  if (allRows.length === 0) return { headers: [], rows: [] };
 
-  const rawHeaders = Object.keys(jsonData[0]);
-  const headers = sanitizeHeaders(rawHeaders);
-  const rows = jsonData.map((row) => {
+  // Find the real header row (first row with 3+ known QB column names)
+  let headerIndex = 0;
+  for (let i = 0; i < Math.min(allRows.length, 15); i++) {
+    const cells = (allRows[i] as unknown[]).map((c) => String(c ?? ""));
+    if (looksLikeHeaderRow(cells)) {
+      headerIndex = i;
+      break;
+    }
+  }
+
+  // Extract headers from the detected row
+  const headerCells = (allRows[headerIndex] as unknown[]).map((c) => String(c ?? "").trim());
+  const rawHeaders = sanitizeHeaders(headerCells);
+
+  // Data rows start after the header
+  const dataSlice = allRows.slice(headerIndex + 1);
+  const rows = dataSlice.map((row) => {
+    const cells = row as unknown[];
     const strRow: Record<string, string> = {};
-    rawHeaders.forEach((raw, i) => {
-      strRow[headers[i]] = String(row[raw] ?? "");
+    rawHeaders.forEach((h, i) => {
+      strRow[h] = String(cells[i] ?? "");
     });
     return strRow;
   });
 
-  return { headers, rows };
+  return { headers: rawHeaders, rows };
 }
 
 export async function parseFile(file: File): Promise<ParsedFile> {
