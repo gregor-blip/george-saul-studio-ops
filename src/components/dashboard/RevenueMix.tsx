@@ -13,7 +13,7 @@ function fmtM(value: number): string {
 
 function Arrow() {
   return (
-    <span className="text-zinc-600 mx-3 text-lg shrink-0 self-center select-none">
+    <span className="text-white/40 mx-4 text-xl shrink-0 self-center select-none">
       &rarr;
     </span>
   );
@@ -29,89 +29,89 @@ export function RevenueMix({ summary }: RevenueMixProps) {
 
   return (
     <div className="bg-[#141414] rounded-xl border border-white/[0.08] p-6">
-      <h3 className="text-sm font-semibold text-white mb-5">How Money Flows</h3>
+      <h3 className="text-base font-semibold text-white mb-6">How Money Flows</h3>
 
       {/* ROW 1 — Media Engine */}
-      <p className="text-[11px] uppercase tracking-wider text-zinc-600 mb-3">
+      <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-4">
         Engine 1 — Media Buying
       </p>
       <div className="flex items-stretch mb-1">
-        <div className="flex-1 bg-[#1a2744] border border-blue-500/30 rounded-xl p-4">
-          <p className="text-[10px] uppercase tracking-wider text-blue-400/70 mb-1">
+        <div className="flex-1 bg-[#1B3A6B] border border-blue-400/50 rounded-xl p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
             Clients Pay G&S
           </p>
-          <p className="text-2xl font-bold tabular-nums text-white">
+          <p className="text-3xl font-bold tabular-nums tracking-tight text-white">
             {fmtM(summary.media_revenue_billed)}
           </p>
         </div>
         <Arrow />
-        <div className="flex-1 bg-[#2a1414] border border-red-500/30 rounded-xl p-4">
-          <p className="text-[10px] uppercase tracking-wider text-red-400/70 mb-1">
+        <div className="flex-1 bg-[#6B1B1B] border border-red-400/50 rounded-xl p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
             G&S Pays Platforms
           </p>
-          <p className="text-2xl font-bold tabular-nums text-red-400">
+          <p className="text-3xl font-bold tabular-nums tracking-tight text-white">
             ({fmtM(summary.media_spend)})
           </p>
         </div>
         <Arrow />
-        <div className="flex-1 bg-[#142a1a] border border-emerald-500/30 rounded-xl p-4">
-          <p className="text-[10px] uppercase tracking-wider text-emerald-400/70 mb-1">
+        <div className="flex-1 bg-[#1B5C2E] border border-emerald-400/50 rounded-xl p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
             Media Spread (G&S Keeps)
           </p>
-          <p className="text-2xl font-bold tabular-nums text-emerald-400">
+          <p className="text-3xl font-bold tabular-nums tracking-tight text-white">
             {fmtM(summary.media_spread)}
           </p>
-          <p className="text-xs text-emerald-600 mt-1">
+          <p className="text-sm font-medium text-emerald-400 mt-1">
             {formatPct(summary.media_margin_pct)} margin
           </p>
         </div>
       </div>
 
       {/* Separator */}
-      <div className="relative my-4">
-        <div className="border-t border-dashed border-white/[0.06]" />
-        <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#141414] px-3 text-[10px] uppercase tracking-wider text-zinc-700">
+      <div className="relative my-6">
+        <div className="border-t border-dashed border-white/[0.08]" />
+        <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#141414] px-3 text-xs text-white/25 tracking-widest uppercase">
           Separate Economic Engines — Not Connected
         </span>
       </div>
 
       {/* ROW 2 — Agency Engine */}
-      <p className="text-[11px] uppercase tracking-wider text-zinc-600 mb-3">
+      <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-4">
         Engine 2 — Core Business (Creative, Retainers, Strategy)
       </p>
       <div className="flex items-stretch mb-1">
-        <div className="flex-1 bg-[#1a2419] border border-amber-500/30 rounded-xl p-4">
-          <p className="text-[10px] uppercase tracking-wider text-amber-400/70 mb-1">
+        <div className="flex-1 bg-[#4A3500] border border-amber-400/50 rounded-xl p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
             Core Business Revenue
           </p>
-          <p className="text-2xl font-bold tabular-nums text-white">
+          <p className="text-3xl font-bold tabular-nums tracking-tight text-white">
             {fmtM(summary.agency_revenue)}
           </p>
         </div>
         <Arrow />
-        <div className="flex-1 bg-[#2a1414] border border-red-500/30 rounded-xl p-4">
-          <p className="text-[10px] uppercase tracking-wider text-red-400/70 mb-1">
+        <div className="flex-1 bg-[#6B1B1B] border border-red-400/50 rounded-xl p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
             People Cost
           </p>
           {summary.total_allocated_cost > 0 ? (
-            <p className="text-2xl font-bold tabular-nums text-red-400">
+            <p className="text-3xl font-bold tabular-nums tracking-tight text-white">
               ({fmtM(summary.total_allocated_cost)})
             </p>
           ) : (
-            <p className="text-sm text-zinc-600 italic mt-1">
+            <p className="text-sm text-white/40 italic mt-1">
               Pending allocations
             </p>
           )}
         </div>
         <Arrow />
-        <div className="flex-1 bg-[#1a2444] border border-blue-500/30 rounded-xl p-4">
-          <p className="text-[10px] uppercase tracking-wider text-blue-400/70 mb-1">
+        <div className="flex-1 bg-[#1B3A6B] border border-blue-400/50 rounded-xl p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
             Agency Gross Profit
           </p>
-          <p className="text-2xl font-bold tabular-nums text-blue-400">
+          <p className="text-3xl font-bold tabular-nums tracking-tight text-white">
             {fmtM(agencyGrossProfit)}
           </p>
-          <p className="text-xs text-blue-600 mt-1">
+          <p className="text-sm font-medium text-blue-400 mt-1">
             {summary.agency_margin_pct !== null
               ? `${formatPct(summary.agency_margin_pct)} margin`
               : "100% until allocations entered"}
@@ -120,24 +120,24 @@ export function RevenueMix({ summary }: RevenueMixProps) {
       </div>
 
       {/* Combined Row */}
-      <div className="bg-[#0f1629] rounded-xl border border-white/[0.06] p-4 mt-4 flex items-center justify-between">
+      <div className="bg-[#0D1F3C] rounded-xl border border-white/[0.12] p-5 mt-6 flex items-center justify-between">
         <div>
-          <p className="text-[10px] uppercase tracking-wider text-zinc-600 mb-1">
+          <p className="text-xs uppercase tracking-wider text-white/50 mb-1">
             Combined Gross Profit
           </p>
-          <p className="text-lg font-bold tabular-nums text-white">
-            {fmtM(summary.media_spread)} (media spread) + {fmtM(agencyGrossProfit)} (agency) = {fmtM(combinedGross)}
+          <p className="text-xl font-bold tabular-nums text-white">
+            {fmtM(summary.media_spread)} (media) + {fmtM(agencyGrossProfit)} (agency) = {fmtM(combinedGross)}
           </p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-600 mb-1">
+          <p className="text-xs uppercase tracking-wider text-white/50 mb-1">
             Est. Net Income
           </p>
-          <p className="text-xl font-bold tabular-nums text-emerald-400">
+          <p className="text-2xl font-bold tabular-nums text-emerald-400">
             {fmtM(summary.estimated_net_income)}
           </p>
           {netPctOfBilled && (
-            <p className="text-xs text-zinc-600">
+            <p className="text-sm text-white/40">
               {netPctOfBilled}% of total billed
             </p>
           )}
