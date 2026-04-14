@@ -76,9 +76,17 @@ function getRevenueType(code: string | null): "media" | "agency" {
   return "agency";
 }
 
-function shouldSkipExpense(code: string | null, category: string | null): boolean {
+function shouldSkipExpense(
+  code: string | null,
+  category: string | null,
+  accountName: string | null
+): boolean {
   if (code && SKIP_CODES.has(code)) return true;
-  if (category && category.toLowerCase().includes("exchange account")) return true;
+  // Only skip the standalone clearing entry — exact match, not substring.
+  // "1020 Payroll Exchange account" (bank reference) must NOT be excluded.
+  const cat = (category ?? "").toLowerCase().trim();
+  const acct = (accountName ?? "").toLowerCase().trim();
+  if (cat === "payroll exchange account" || acct === "payroll exchange account") return true;
   return false;
 }
 
@@ -271,7 +279,7 @@ export async function runImport(
       const category = getMappedValue(row, "account", mappings).trim() || null;
 
       // Skip excluded account codes and exchange account rows
-      if (shouldSkipExpense(currentAccountCode, category)) {
+      if (shouldSkipExpense(currentAccountCode, category, currentAccountName)) {
         skippedRows++;
         skipReasons["excluded account code"] = (skipReasons["excluded account code"] ?? 0) + 1;
         continue;
