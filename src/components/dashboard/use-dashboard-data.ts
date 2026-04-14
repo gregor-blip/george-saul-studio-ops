@@ -166,7 +166,7 @@ export function useClientProfitability(period: Period = "2026") {
   return useQuery({
     queryKey: ["client-profitability", period],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc(
+      const { data, error } = await (supabase.rpc as Function)(
         "get_client_profitability_by_period",
         { p_start: range.start, p_end: range.end }
       );
