@@ -20,11 +20,17 @@ function Arrow() {
 }
 
 export function RevenueMix({ summary }: RevenueMixProps) {
-  const agencyGrossProfit = summary.agency_revenue - summary.total_allocated_cost;
+  const agencyGrossProfit =
+    summary.agency_revenue - summary.people_cost - summary.overhead_cost;
   const combinedGross = summary.media_spread + agencyGrossProfit;
   const netPctOfBilled =
     summary.total_billed > 0
       ? ((summary.estimated_net_income / summary.total_billed) * 100).toFixed(1)
+      : null;
+
+  const agencyMarginPct =
+    summary.agency_revenue > 0
+      ? (agencyGrossProfit / summary.agency_revenue) * 100
       : null;
 
   return (
@@ -93,9 +99,9 @@ export function RevenueMix({ summary }: RevenueMixProps) {
           <p className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
             People Cost
           </p>
-          {summary.total_allocated_cost > 0 ? (
-            <p className="text-3xl font-bold tabular-nums tracking-tight text-white">
-              ({fmtM(summary.total_allocated_cost)})
+          {summary.people_cost > 0 ? (
+            <p className="text-3xl font-bold tabular-nums tracking-tight text-red-300">
+              ({fmtM(summary.people_cost)})
             </p>
           ) : (
             <p className="text-sm text-white/40 italic mt-1">
@@ -104,17 +110,36 @@ export function RevenueMix({ summary }: RevenueMixProps) {
           )}
         </div>
         <Arrow />
+        <div className="flex-1 bg-[#6B1B1B] border border-red-400/50 rounded-xl p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
+            Overhead
+          </p>
+          {summary.overhead_cost > 0 ? (
+            <p className="text-3xl font-bold tabular-nums tracking-tight text-red-300">
+              ({fmtM(summary.overhead_cost)})
+            </p>
+          ) : (
+            <p className="text-sm text-white/40 italic mt-1">
+              No data
+            </p>
+          )}
+        </div>
+        <Arrow />
         <div className="flex-1 bg-[#1B3A6B] border border-blue-400/50 rounded-xl p-5">
           <p className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
             Agency Gross Profit
           </p>
-          <p className="text-3xl font-bold tabular-nums tracking-tight text-white">
-            {fmtM(agencyGrossProfit)}
+          <p
+            className={`text-3xl font-bold tabular-nums tracking-tight ${
+              agencyGrossProfit >= 0 ? "text-blue-400" : "text-red-400"
+            }`}
+          >
+            {agencyGrossProfit < 0 ? `(${fmtM(Math.abs(agencyGrossProfit))})` : fmtM(agencyGrossProfit)}
           </p>
           <p className="text-sm font-medium text-blue-400 mt-1">
-            {summary.agency_margin_pct !== null
-              ? `${formatPct(summary.agency_margin_pct)} margin`
-              : "100% until allocations entered"}
+            {agencyMarginPct !== null
+              ? `${formatPct(agencyMarginPct)} margin`
+              : "N/A"}
           </p>
         </div>
       </div>

@@ -91,6 +91,24 @@ async function fetchStudioSummary(period: Period): Promise<StudioSummary> {
     0
   );
 
+  // 4b. People cost and overhead from v_costs_monthly
+  let costsQuery = supabase
+    .from("v_costs_monthly" as any)
+    .select("people_cost, overhead_cost, fiscal_year");
+  if (fiscalYears) {
+    costsQuery = costsQuery.in("fiscal_year", fiscalYears);
+  }
+  const { data: costsRows, error: costsErr } = await costsQuery;
+  if (costsErr) throw costsErr;
+  const peopleCost = (costsRows ?? []).reduce(
+    (sum: number, r: any) => sum + (Number(r.people_cost) || 0),
+    0
+  );
+  const overheadCost = (costsRows ?? []).reduce(
+    (sum: number, r: any) => sum + (Number(r.overhead_cost) || 0),
+    0
+  );
+
   // 5. Operational fields (period-independent) from v_studio_summary
   const { data: ops, error: opsErr } = await supabase
     .from("v_studio_summary")
@@ -104,6 +122,8 @@ async function fetchStudioSummary(period: Period): Promise<StudioSummary> {
   const mediaSpread = mediaRevenueBilled - mediaSpend;
   const totalBilled = agencyRevenue + mediaRevenueBilled;
 
+  const agencyTotalCost = peopleCost + overheadCost;
+
   return {
     agency_revenue: agencyRevenue,
     total_allocated_cost: totalAllocatedCost,
@@ -111,8 +131,10 @@ async function fetchStudioSummary(period: Period): Promise<StudioSummary> {
       agencyRevenue === 0
         ? null
         : Math.round(
-            ((agencyRevenue - totalAllocatedCost) / agencyRevenue) * 10000
+            ((agencyRevenue - agencyTotalCost) / agencyRevenue) * 10000
           ) / 100,
+    people_cost: peopleCost,
+    overhead_cost: overheadCost,
     media_revenue_billed: mediaRevenueBilled,
     media_spend: mediaSpend,
     media_spread: mediaSpread,
@@ -122,7 +144,7 @@ async function fetchStudioSummary(period: Period): Promise<StudioSummary> {
         : Math.round((mediaSpread / mediaRevenueBilled) * 10000) / 100,
     total_billed: totalBilled,
     estimated_net_income: Math.round(
-      agencyRevenue + mediaSpread - totalAllocatedCost
+      agencyRevenue + mediaSpread - agencyTotalCost
     ),
     active_headcount: Number(ops.active_headcount) || 0,
     agency_revenue_per_employee:

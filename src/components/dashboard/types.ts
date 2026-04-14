@@ -4,6 +4,10 @@ export interface StudioSummary {
   total_allocated_cost: number;
   agency_margin_pct: number | null;
 
+  // Cost breakdown (from qb_expenses via v_costs_monthly)
+  people_cost: number;
+  overhead_cost: number;
+
   // Media engine
   media_revenue_billed: number;
   media_spend: number;
