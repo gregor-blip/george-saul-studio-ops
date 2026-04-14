@@ -14,6 +14,8 @@ interface RevenueInsert {
   invoice_date: string | null;
   amount: number;
   payment_status: string | null;
+  account_code: string | null;
+  account_name: string | null;
 }
 
 interface ExpenseInsert {
@@ -23,6 +25,31 @@ interface ExpenseInsert {
   vendor: string | null;
   amount: number;
   description: string | null;
+  client_name_raw: string | null;
+  account_code: string | null;
+  account_name: string | null;
+}
+
+// Pattern: "4011 Media Orders" or "6021 Daniel Dahlberg Wages"
+const ACCOUNT_SECTION_RE = /^(\d{4})\s+(.+)$/;
+
+function isAccountSectionHeader(row: Record<string, string>, headers: string[]): { code: string; name: string } | null {
+  // Section headers have content only in the first column
+  if (headers.length === 0) return null;
+  const firstVal = (row[headers[0]] ?? "").trim();
+  if (!firstVal) return null;
+
+  const match = firstVal.match(ACCOUNT_SECTION_RE);
+  if (!match) return null;
+
+  // Verify the rest of the row is empty (section header, not a data row)
+  const hasOtherContent = headers.slice(1).some((h) => {
+    const v = (row[h] ?? "").trim();
+    return v !== "" && v !== "0" && v !== "0.00";
+  });
+  if (hasOtherContent) return null;
+
+  return { code: match[1], name: match[2] };
 }
 
 function shouldSkipRow(
@@ -83,7 +110,8 @@ async function batchInsert(
 export async function runImport(
   rows: Record<string, string>[],
   mappings: ColumnMapping[],
-  fileName: string
+  fileName: string,
+  headers: string[] = []
 ): Promise<ImportResult> {
   // Create import run
   const { data: importRun, error: runError } = await supabase
@@ -108,7 +136,21 @@ export async function runImport(
   const skipReasons: Record<string, number> = {};
   const allErrors: string[] = [];
 
+  // Track current account section as we scan rows
+  let currentAccountCode: string | null = null;
+  let currentAccountName: string | null = null;
+
   for (const row of rows) {
+    // Check if this row is an account section header (e.g. "4011 Media Orders")
+    const sectionHeader = isAccountSectionHeader(row, headers);
+    if (sectionHeader) {
+      currentAccountCode = sectionHeader.code;
+      currentAccountName = sectionHeader.name;
+      skippedRows++;
+      skipReasons["account section header"] = (skipReasons["account section header"] ?? 0) + 1;
+      continue;
+    }
+
     const skipReason = shouldSkipRow(row, mappings);
     if (skipReason) {
       skippedRows++;
@@ -129,15 +171,15 @@ export async function runImport(
       (t) => t.toLowerCase() === txnType.toLowerCase()
     );
 
+    // Resolve client name: prefer Class column over Name column
+    const classValue = getMappedValue(row, "client_class", mappings).trim();
+    const nameValue = getMappedValue(row, "client_name_raw", mappings).trim();
+    const clientName = classValue || nameValue;
+
     if (isRevenue) {
       const isCreditMemo = txnType.toLowerCase() === "credit memo";
       const amount = isCreditMemo ? -Math.abs(parsedAmount) : parsedAmount;
       const balanceRaw = getMappedValue(row, "balance", mappings);
-
-      // Prefer Class column (clean canonical name) over Name column
-      const classValue = getMappedValue(row, "client_class", mappings).trim();
-      const nameValue = getMappedValue(row, "client_name_raw", mappings).trim();
-      const clientName = classValue || nameValue;
 
       revenueRows.push({
         import_run_id: runId,
@@ -146,18 +188,20 @@ export async function runImport(
         invoice_date: parseQBDate(getMappedValue(row, "transaction_date", mappings)),
         amount,
         payment_status: derivePaymentStatus(amountRaw, balanceRaw),
+        account_code: currentAccountCode,
+        account_name: currentAccountName,
       });
     } else if (isExpense) {
-      const expClassValue = getMappedValue(row, "client_class", mappings).trim();
-      const expNameValue = getMappedValue(row, "client_name_raw", mappings).trim();
-
       expenseRows.push({
         import_run_id: runId,
         expense_date: parseQBDate(getMappedValue(row, "transaction_date", mappings)),
         category: getMappedValue(row, "account", mappings).trim() || null,
-        vendor: expClassValue || expNameValue || null,
+        vendor: nameValue || null,
         amount: Math.abs(parsedAmount),
         description: getMappedValue(row, "memo", mappings).trim() || null,
+        client_name_raw: clientName || null,
+        account_code: currentAccountCode,
+        account_name: currentAccountName,
       });
     } else {
       skippedRows++;

@@ -46,7 +46,7 @@ export default function DataManagement() {
     setState({ phase: "importing", file, totalRows: file.rows.length });
 
     try {
-      const result = await runImport(file.rows, file.mappings, file.fileName);
+      const result = await runImport(file.rows, file.mappings, file.fileName, file.headers);
       setState({ phase: "complete", result });
       toast.success("QuickBooks data imported successfully");
       queryClient.invalidateQueries({ queryKey: ["import-runs"] });

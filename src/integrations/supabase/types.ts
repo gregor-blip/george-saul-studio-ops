@@ -715,8 +715,11 @@ export type Database = {
       }
       qb_expenses: {
         Row: {
+          account_code: string | null
+          account_name: string | null
           amount: number
           category: string | null
+          client_name_raw: string | null
           created_at: string
           description: string | null
           expense_date: string | null
@@ -725,8 +728,11 @@ export type Database = {
           vendor: string | null
         }
         Insert: {
+          account_code?: string | null
+          account_name?: string | null
           amount: number
           category?: string | null
+          client_name_raw?: string | null
           created_at?: string
           description?: string | null
           expense_date?: string | null
@@ -735,8 +741,11 @@ export type Database = {
           vendor?: string | null
         }
         Update: {
+          account_code?: string | null
+          account_name?: string | null
           amount?: number
           category?: string | null
+          client_name_raw?: string | null
           created_at?: string
           description?: string | null
           expense_date?: string | null
@@ -756,6 +765,8 @@ export type Database = {
       }
       qb_revenue: {
         Row: {
+          account_code: string | null
+          account_name: string | null
           amount: number
           client_name_raw: string
           created_at: string
@@ -767,6 +778,8 @@ export type Database = {
           payment_status: string | null
         }
         Insert: {
+          account_code?: string | null
+          account_name?: string | null
           amount: number
           client_name_raw: string
           created_at?: string
@@ -778,6 +791,8 @@ export type Database = {
           payment_status?: string | null
         }
         Update: {
+          account_code?: string | null
+          account_name?: string | null
           amount?: number
           client_name_raw?: string
           created_at?: string
