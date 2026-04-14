@@ -51,9 +51,9 @@ function FlowBox({
   subColor = "text-zinc-600",
 }: FlowBoxProps) {
   return (
-    <div className="relative flex-1 overflow-hidden rounded-lg bg-[#121214] border border-[#262628] p-4">
+    <div className="relative flex-1 overflow-hidden rounded-lg bg-[#121214] border border-[#262628] p-5">
       <div
-        className="absolute left-0 top-1 bottom-1 w-0.5 rounded-full"
+        className="absolute left-0 top-0 bottom-0 w-0.5"
         style={{ backgroundColor: accentColor }}
       />
       <p className="text-[10px] font-normal uppercase tracking-widest text-zinc-600 mb-2">
@@ -88,7 +88,7 @@ export function RevenueMix({ summary }: RevenueMixProps) {
       <div className="border-t border-zinc-900 mt-2 mb-4" />
 
       {/* ── ENGINE 1 ── */}
-      <div className="bg-[#0D1C3A] rounded-md px-3 py-1 mb-3 w-fit">
+      <div className="inline-flex items-center px-3 py-1 rounded-md mb-4 bg-[#0A1628] border border-[#1E3A6E]">
         <span className="text-[11px] font-semibold text-[#6496ED] uppercase tracking-wider">
           Engine 1 &mdash; Media Buying
         </span>
@@ -131,7 +131,7 @@ export function RevenueMix({ summary }: RevenueMixProps) {
       </div>
 
       {/* ── ENGINE 2 ── */}
-      <div className="bg-[#1A1505] rounded-md px-3 py-1 mb-3 w-fit">
+      <div className="inline-flex items-center px-3 py-1 rounded-md mb-4 bg-[#1A1400] border border-[#4A3800]">
         <span className="text-[11px] font-semibold text-[#C49B37] uppercase tracking-wider">
           Engine 2 &mdash; Core Business (Creative, Retainers, Strategy)
         </span>
@@ -160,7 +160,7 @@ export function RevenueMix({ summary }: RevenueMixProps) {
       </div>
 
       {/* ── COMBINED SECTION ── */}
-      <div className="bg-[#0D0D11] rounded-lg border border-zinc-900 p-5 mt-4">
+      <div className="bg-[#0D0D11] rounded-lg border border-[#1E1E24] p-5 mt-4">
         {/* Gross profit label pill */}
         <div className="bg-zinc-900 rounded px-2 py-0.5 w-fit mb-3">
           <span className="text-[9px] uppercase tracking-widest text-zinc-500">
